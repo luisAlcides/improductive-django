@@ -1,0 +1,8 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.bg-pastel {
+    background-color: #f8f8ff; /* Pastel blue background */
+}

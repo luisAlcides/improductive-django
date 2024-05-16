@@ -5,12 +5,84 @@
 
 {% block content %}
     <h1 class="mt-4">Add Study Time</h1>
-    <form method="post" class="mt-4">
+    <form method="post" class="mt-4" id="studyTimeForm">
         {% csrf_token %}
         <div class="form-group">
             {{ form.as_p }}
         </div>
-        <button type="submit" class="btn btn-primary">Save</button>
+        <div class="form-group">
+            <label for="timer">Timer</label>
+            <div id="timer">00:00:00</div>
+            <button type="button" class="btn btn-primary" onclick="startTimer()">Start</button>
+            <button type="button" class="btn btn-secondary" onclick="pauseTimer()">Pause</button>
+            <button type="button" class="btn btn-danger" onclick="resetTimer()">Reset</button>
+        </div>
+        <input type="hidden" name="study_time" id="study_time">
+        <button type="submit" class="btn btn-primary" onclick="submitForm()">Save</button>
         <a href="{% url 'index' %}" class="btn btn-secondary">Cancel</a>
     </form>
+
+    <script>
+        let timer;
+        let startTime;
+        let updatedTime;
+        let difference;
+        let tInterval;
+        let savedTime;
+        let running = false;
+        let paused = false;
+
+        function startTimer() {
+            if (!running) {
+                startTime = new Date().getTime();
+                tInterval = setInterval(getShowTime, 1);
+                paused = false;
+                running = true;
+            }
+        }
+
+        function pauseTimer() {
+            if (!paused && running) {
+                clearInterval(tInterval);
+                savedTime = difference;
+                paused = true;
+                running = false;
+            }
+        }
+
+        function resetTimer() {
+            clearInterval(tInterval);
+            savedTime = 0;
+            difference = 0;
+            paused = false;
+            running = false;
+            document.getElementById("timer").innerHTML = "00:00:00";
+        }
+
+        function getShowTime() {
+            updatedTime = new Date().getTime();
+            if (savedTime) {
+                difference = (updatedTime - startTime) + savedTime;
+            } else {
+                difference = updatedTime - startTime;
+            }
+            let hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            let minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+            let seconds = Math.floor((difference % (1000 * 60)) / 1000);
+            hours = (hours < 10) ? "0" + hours : hours;
+            minutes = (minutes < 10) ? "0" + minutes : minutes;
+            seconds = (seconds < 10) ? "0" + seconds : seconds;
+            document.getElementById("timer").innerHTML = hours + ":" + minutes + ":" + seconds;
+        }
+
+        function submitForm() {
+            const timeArray = document.getElementById("timer").innerHTML.split(':');
+            const hours = parseInt(timeArray[0]);
+            const minutes = parseInt(timeArray[1]);
+            const seconds = parseInt(timeArray[2]);
+            const totalMinutes = (hours * 60) + minutes + (seconds / 60);
+            document.getElementById("study_time").value = totalMinutes.toFixed(2);
+            document.getElementById("studyTimeForm").submit();
+        }
+    </script>
 {% endblock %}

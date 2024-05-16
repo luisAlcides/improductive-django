@@ -2,7 +2,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Goal, CategoryHabit, Month, Habit, StudyDay
 from .forms import GoalForm, HabitForm, StudyDayForm
-from django.db import transaction
+from django.utils import timezone
 import datetime
 import matplotlib.pyplot as plt
 import io
@@ -11,7 +11,7 @@ import base64
 
 
 def index(request):
-    current_month = datetime.datetime.now().strftime("%B")
+    current_month = timezone.now().strftime("%B")
     goals = Goal.objects.filter(month__name=current_month)
     study_days = StudyDay.objects.all()
     chart = generate_chart(study_days, goals)
@@ -19,13 +19,13 @@ def index(request):
         'goals': goals,
         'study_days': study_days,
         'chart': chart,
+        'form': StudyDayForm(),
     }
     return render(request, 'habits/index.html', context)
 
 
 def generate_chart(study_days, goals):
-    # DPI más alto para mejor calidad
-    fig, ax = plt.subplots(figsize=(10, 6), dpi=150)
+    fig, ax = plt.subplots(figsize=(9, 5), dpi=200)
     ax.set_title("Study Goals and Progress")
     ax.set_xlabel("Goals")
     ax.set_ylabel("Habits")
@@ -60,7 +60,7 @@ def generate_chart(study_days, goals):
 
     legend_handles = [plt.Rectangle((0, 0), 1, 1, color=color)
                       for color in legend_colors]
-    ax.legend(legend_handles, legend_labels, loc="upper right", fontsize=13)
+    ax.legend(legend_handles, legend_labels, loc="upper right", fontsize=12)
 
     canvas = plt.gcf().canvas
     buf = io.BytesIO()
