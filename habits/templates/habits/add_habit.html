@@ -1,0 +1,16 @@
+
+{% extends 'habits/base.html' %}
+
+{% block title %}Add Habit - ImProductive{% endblock %}
+
+{% block content %}
+    <h1 class="mt-4">Add Habit</h1>
+    <form method="post" class="mt-4">
+        {% csrf_token %}
+        <div class="form-group">
+            {{ form.as_p }}
+        </div>
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a href="{% url 'index' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+{% endblock %}

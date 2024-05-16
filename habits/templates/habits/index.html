@@ -1,0 +1,58 @@
+
+{% extends 'habits/base.html' %}
+
+{% block title %}Dashboard - ImProductive{% endblock %}
+
+{% block content %}
+    <h1 class="mt-4">ImProductive Dashboard</h1>
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            Goals
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            {% for goal in goals %}
+                                <li class="list-group-item">
+                                    <strong>{{ goal.category.name }}:</strong> {{ goal.goal }} hours in {{ goal.month.name }}
+                                    <div class="float-right">
+                                        <a href="{% url 'update_goal' goal.id %}" class="btn btn-sm btn-warning btn-custom">Update</a>
+                                        <a href="{% url 'delete_goal' goal.id %}" class="btn btn-sm btn-danger btn-custom">Delete</a>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            Study Days
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            {% for study in study_days %}
+                                <li class="list-group-item">
+                                    <strong>{{ study.category.name }}:</strong> {{ study.study_time }} hours on {{ study.date_current }}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    Study Goals and Progress Chart
+                </div>
+                <div class="card-body text-center">
+                    <img src="data:image/png;base64,{{ chart }}" alt="Chart" class="img-fluid" style="max-width: 100%; height: auto;">
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
